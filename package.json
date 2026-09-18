@@ -20,8 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "node node_modules/prisma/build/index.js generate",
     "prisma:migrate": "node node_modules/prisma/build/index.js migrate dev",
-    "prisma:studio": "node node_modules/prisma/build/index.js studio",
-    "postinstall": "node node_modules/prisma/build/index.js generate"
+    "prisma:studio": "node node_modules/prisma/build/index.js studio"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
