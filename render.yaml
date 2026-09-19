@@ -15,4 +15,23 @@ services:
         value: https://fresh-sea.vercel.app/payment/result
       - key: PAY2S_IPN_URL
         value: https://seafood-api.onrender.com/api/v1/payment/pay2s/webhook
+      # Các biến sau phải set thủ công trên Render Dashboard (không commit secret vào git)
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_DIRECT_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: PAY2S_PARTNER_CODE
+        sync: false
+      - key: PAY2S_ACCESS_KEY
+        sync: false
+      - key: PAY2S_SECRET_KEY
+        sync: false
     autoDeploy: true
