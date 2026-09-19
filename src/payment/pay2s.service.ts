@@ -106,16 +106,18 @@ export class Pay2sService {
       const data = await response.json() as any;
       this.logger.log(`Pay2S response: ${JSON.stringify(data)}`);
 
-      // resultCode === 0 là thành công, payUrl là link redirect
-      if (data.resultCode === 0 && data.payUrl) {
+      // Pay2S có thể trả về resultCode (docs cũ) hoặc status: true (docs mới)
+      const isSuccess = (data.resultCode === 0 || data.status === true) && data.payUrl;
+      if (isSuccess) {
+        this.logger.log(`Pay2S success - payUrl: ${data.payUrl.substring(0, 80)}...`);
         return data.payUrl;
       }
 
-      this.logger.error(`Lỗi từ Pay2S: ${data.message}`);
+      this.logger.error(`Lỗi từ Pay2S: ${data.message} | Full response: ${JSON.stringify(data)}`);
 
-      // Sandbox fallback: redirect thẳng về result page để test flow FE
+      // Sandbox fallback: redirect về result page để test flow FE mà không cần bank account thực
       if (this.isSandbox) {
-        this.logger.log('Fallback sang Sandbox Mock URL');
+        this.logger.log('Sandbox mode: dùng Mock URL để test FE flow');
         return `${this.returnUrl}?orderNumber=${orderNumber}&mock_pay2s=true&status=success`;
       }
 
