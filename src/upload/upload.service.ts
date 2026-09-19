@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+import WebSocket from 'ws';
 
 @Injectable()
 export class UploadService {
@@ -19,7 +20,10 @@ export class UploadService {
           'Supabase chưa được cấu hình. Vui lòng thêm SUPABASE_URL và SUPABASE_SERVICE_KEY vào .env',
         );
       }
-      this._client = createClient(url, key);
+      this._client = createClient(url, key, {
+        // Cần thiết cho Node.js < 22 (Render free dùng Node.js 20)
+        realtime: { transport: WebSocket as any },
+      });
     }
     return this._client;
   }
