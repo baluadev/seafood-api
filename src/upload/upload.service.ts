@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class UploadService {
   private _client: SupabaseClient | null = null;
-  private readonly BUCKET = process.env.SUPABASE_BUCKET || 'seashop-uploads';
+  private readonly BUCKET = process.env.SUPABASE_BUCKET || 'image-uploads';
   private readonly ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
   private get supabase(): SupabaseClient {
