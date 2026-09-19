@@ -143,4 +143,8 @@ export class ProductQueryDto {
   @Type(() => Number)
   @IsNumber()
   maxPrice?: number;
+
+  @IsOptional()
+  @IsString()
+  all?: string; // 'true' = lấy tất cả không phân trang (dùng cho admin)
 }
