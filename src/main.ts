@@ -18,12 +18,24 @@ async function bootstrap() {
   );
 
   // CORS for dashboard + admin
+  const allowedOrigins = [
+    // Local dev
+    'http://localhost:3000',
+    'http://localhost:3002',
+    // Production (Vercel)
+    'https://fresh-sea.vercel.app',
+    'https://freshsea-admin.vercel.app',
+    // Custom domains (nếu có thêm sau này)
+    ...(process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+      : []),
+  ];
+
   app.enableCors({
-    origin: [
-      'http://localhost:3000',  // dashboard
-      'http://localhost:3002',  // admin
-    ],
+    origin: allowedOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   const port = process.env.PORT || 3001;
