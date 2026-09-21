@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Patch, Delete,
+  Controller, Get, Post, Patch,
   Body, Param, Query,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
@@ -37,8 +37,8 @@ export class CategoriesController {
   }
 
   @Roles(Role.ADMIN)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(id);
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id') id: string) {
+    return this.categoriesService.toggleActive(id);
   }
 }

@@ -97,8 +97,12 @@ export class ProductsService {
     });
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
-    return this.prisma.product.delete({ where: { id } });
+  async toggleActive(id: string) {
+    const product = await this.findOne(id);
+    return this.prisma.product.update({
+      where: { id },
+      data: { isActive: !product.isActive },
+      select: { id: true, title: true, isActive: true },
+    });
   }
 }

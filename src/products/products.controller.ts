@@ -1,5 +1,5 @@
 import {
-  Controller, Get, Post, Patch, Delete,
+  Controller, Get, Post, Patch,
   Body, Param, Query,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
@@ -43,8 +43,8 @@ export class ProductsController {
   }
 
   @Roles(Role.ADMIN)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(id);
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id') id: string) {
+    return this.productsService.toggleActive(id);
   }
 }

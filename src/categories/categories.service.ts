@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 
@@ -39,17 +39,11 @@ export class CategoriesService {
     return this.prisma.category.update({ where: { id }, data: dto });
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
-
-    // Kiểm tra category có sản phẩm liên kết không
-    const productCount = await this.prisma.product.count({ where: { categoryId: id } });
-    if (productCount > 0) {
-      throw new BadRequestException(
-        `Không thể xóa danh mục này vì đang có ${productCount} sản phẩm liên kết. Hãy chuyển hoặc xóa sản phẩm trước.`,
-      );
-    }
-
-    return this.prisma.category.delete({ where: { id } });
+  async toggleActive(id: string) {
+    const category = await this.findOne(id);
+    return this.prisma.category.update({
+      where: { id },
+      data: { isActive: !category.isActive },
+    });
   }
 }
