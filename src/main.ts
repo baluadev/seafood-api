@@ -23,8 +23,9 @@ async function bootstrap() {
     'http://localhost:3000',
     'http://localhost:3002',
     // Production (Vercel)
-    'https://fresh-sea.vercel.app',
-    'https://freshsea-admin.vercel.app',
+    'https://taphoasin.vercel.app',       // dashboard (tên mới)
+    'https://fresh-sea.vercel.app',        // dashboard (tên cũ, fallback)
+    'https://freshsea-admin.vercel.app',   // admin
     // Custom domains (nếu có thêm sau này)
     ...(process.env.ALLOWED_ORIGINS
       ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
