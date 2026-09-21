@@ -29,7 +29,7 @@ async function main() {
       id: 'slider-1',
       title: 'Hải Sản Tươi Sống Mỗi Ngày',
       subtitle: '🌊 Trực tiếp từ biển',
-      description: 'Giao hàng tận nhà trong ngày tại TP.HCM. Đảm bảo tươi sống, an toàn vệ sinh.',
+      description: 'Giao hàng tận nhà trong ngày tại TP.Hà Nội. Đảm bảo tươi sống, an toàn vệ sinh.',
       imageUrl: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?w=1200&q=80',
       linkUrl: '/shop',
       sortOrder: 1,
