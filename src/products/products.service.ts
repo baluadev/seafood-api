@@ -7,11 +7,24 @@ export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(query: ProductQueryDto) {
-    const { page = 1, limit = 12, categoryId, search, sort, isHot, minPrice, maxPrice } = query;
+    const { page = 1, limit = 12, categoryId, search, sort, isHot, minPrice, maxPrice, all } = query;
     const skip = (page - 1) * limit;
+    const isAdmin = all === 'true';
 
-    const where: any = { isActive: true };
-    if (categoryId) where.categoryId = categoryId;
+    // isAdmin → lấy tất cả kể cả inactive; storefront → chỉ lấy active
+    const where: any = isAdmin ? {} : { isActive: true };
+
+    // Khi filter theo category: kiểm tra category có active không (chỉ áp dụng storefront)
+    if (categoryId) {
+      if (!isAdmin) {
+        const cat = await this.prisma.category.findUnique({ where: { id: categoryId } });
+        if (!cat || !cat.isActive) {
+          return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
+        }
+      }
+      where.categoryId = categoryId;
+    }
+
     if (isHot === 'true') where.isHot = true;
     if (search) where.title = { contains: search, mode: 'insensitive' };
     if (minPrice !== undefined || maxPrice !== undefined) {
