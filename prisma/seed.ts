@@ -233,6 +233,43 @@ async function main() {
   }
   console.log('✅ Products:', products.length);
 
+  // ─── Promotion Cards ──────────────────────────────────────────────
+  const promotions = [
+    {
+      id: 'promo-1',
+      tag: 'TƯƠI MỚI MỖI NGÀY',
+      title: 'Trái cây nhiệt đới tươi mới',
+      description: 'Giảm ngay 20% cho xoài cát Hòa Lộc, bưởi da xanh & dừa lưới hôm nay.',
+      buttonText: 'Khám phá ngay →',
+      linkUrl: '/shop',
+      imageUrl: 'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=300&h=200&fit=crop',
+      bgColor: '#d4f7a0',
+      isActive: true,
+      sortOrder: 0,
+    },
+    {
+      id: 'promo-2',
+      tag: 'SỐNG KHỎE MỖI NGÀY',
+      title: 'Bữa ăn thuần Organic',
+      description: 'Combo rau củ canh tác không thuốc trừ sâu, an toàn cho cả bé.',
+      buttonText: 'Xem gói combo →',
+      linkUrl: '/shop',
+      imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300&h=200&fit=crop',
+      bgColor: '#d4f7a0',
+      isActive: true,
+      sortOrder: 1,
+    },
+  ];
+
+  for (const promo of promotions) {
+    await prisma.promotion.upsert({
+      where: { id: promo.id },
+      update: { tag: promo.tag, title: promo.title, description: promo.description, buttonText: promo.buttonText, imageUrl: promo.imageUrl },
+      create: promo,
+    });
+  }
+  console.log('✅ Promotions:', promotions.length);
+
   console.log('\n🎉 Seed completed!');
   console.log('👤 Admin login: admin@seashop.vn / admin123456');
 }

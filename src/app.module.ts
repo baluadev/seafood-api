@@ -11,6 +11,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { UploadModule } from './upload/upload.module';
 import { PaymentModule } from './payment/payment.module';
 import { UsersModule } from './users/users.module';
+import { PromotionsModule } from './promotions/promotions.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -27,6 +28,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     UploadModule,
     PaymentModule,
     UsersModule,
+    PromotionsModule,
   ],
   providers: [
     {
