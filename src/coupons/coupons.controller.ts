@@ -15,7 +15,7 @@ export class CouponsController {
   /** POST /coupons/validate — JWT User: kiểm tra + tính discount */
   @Post('validate')
   validate(@Req() req: Request, @Body() dto: ValidateCouponDto) {
-    const userId = (req as any).user.id;
+    const userId = (req as any).user.sub;
     return this.couponsService.validate(userId, dto);
   }
 
@@ -25,7 +25,7 @@ export class CouponsController {
     @Req() req: Request,
     @Query('orderAmount') orderAmount: string,
   ) {
-    const userId = (req as any).user.id;
+    const userId = (req as any).user.sub;
     return this.couponsService.getSuggestions(userId, Number(orderAmount) || 0);
   }
 

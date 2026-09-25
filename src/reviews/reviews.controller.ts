@@ -21,11 +21,11 @@ export class ReviewsController {
     @CurrentUser() user: any,
     @Body() dto: CreateReviewDto,
   ) {
-    return this.reviewsService.create(productId, user.id, dto);
+    return this.reviewsService.create(productId, user.sub, dto);
   }
 
   @Delete(':id')
   delete(@Param('id') id: string, @CurrentUser() user: any) {
-    return this.reviewsService.delete(id, user.id, user.role);
+    return this.reviewsService.delete(id, user.sub, user.role);
   }
 }
