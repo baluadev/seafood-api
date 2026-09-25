@@ -8,6 +8,7 @@ import { CartService } from '../cart/cart.service';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto/order.dto';
 import { OrderStatus } from '@prisma/client';
 import { Pay2sService } from '../payment/pay2s.service';
+import { CouponsService } from '../coupons/coupons.service';
 
 // Bank info for VietQR (configure via env in production)
 const BANK_ID = process.env.BANK_ID || 'VCB'; // Vietcombank
@@ -21,6 +22,7 @@ export class OrdersService {
     private prisma: PrismaService,
     private cartService: CartService,
     private pay2sService: Pay2sService,
+    private couponsService: CouponsService,
   ) {}
 
   private generateOrderNumber(): string {
@@ -39,7 +41,27 @@ export class OrdersService {
     }
 
     const subtotal = cart.totalPrice;
-    const totalAmount = subtotal + SHIPPING_FEE;
+    let discountAmount = 0;
+    let shippingFee = SHIPPING_FEE;
+    let couponId: string | undefined;
+
+    // Validate coupon if provided
+    if (dto.couponCode) {
+      const validation = await this.couponsService.validate(userId, {
+        code: dto.couponCode,
+        orderAmount: subtotal,
+      });
+
+      if (!validation.valid) {
+        throw new BadRequestException(validation.message || 'Mã khuyến mãi không hợp lệ');
+      }
+
+      discountAmount = validation.discountAmount ?? 0;
+      if (validation.shippingFree) shippingFee = 0;
+      couponId = validation.coupon?.id;
+    }
+
+    const totalAmount = Math.max(0, subtotal + shippingFee - discountAmount);
     const orderNumber = this.generateOrderNumber();
 
     const order = await this.prisma.order.create({
@@ -47,8 +69,10 @@ export class OrdersService {
         userId,
         orderNumber,
         subtotal,
-        shippingFee: SHIPPING_FEE,
+        shippingFee,
+        discountAmount,
         totalAmount,
+        couponId: couponId ?? null,
         note: dto.note,
         shippingAddress: {
           create: dto.shippingAddress,
@@ -73,6 +97,11 @@ export class OrdersService {
         shippingAddress: true,
       },
     });
+
+    // Apply coupon usage tracking (atomic: increment usageCount + create usage record)
+    if (couponId) {
+      await this.couponsService.applyCouponToOrder(couponId, userId, order.id);
+    }
 
     // Clear cart after order placed
     await this.cartService.clearCart(userId);
