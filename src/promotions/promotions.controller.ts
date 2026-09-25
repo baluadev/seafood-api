@@ -11,12 +11,14 @@ import { Role } from '@prisma/client';
 import { PromotionsService } from './promotions.service';
 import { CreatePromotionDto, UpdatePromotionDto } from './dto/promotion.dto';
 import { Roles } from '../common/decorators/roles.decorator';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('promotions')
 export class PromotionsController {
   constructor(private promotionsService: PromotionsService) {}
 
   /** GET /promotions — auth user sees active promotions */
+  @Public()
   @Get()
   findAll() {
     return this.promotionsService.findAll();
