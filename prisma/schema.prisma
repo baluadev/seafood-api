@@ -88,6 +88,24 @@ model Product {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
+  // ─── Tab 0: Thông tin sản phẩm & Dinh dưỡng ───
+  origin            String?  // "Đắk Lắk, Việt Nam"
+  packagingInfo     String?  @map("packaging_info")     // "Hộp 1kg, đóng gói chân không"
+  preservationDays  Int?     @map("preservation_days")  // 5
+  cultivationMethod String?  @map("cultivation_method") // "Thuần hữu cơ"
+  nutritionInfo     Json?    @map("nutrition_info")
+  // { "calories":"160 kcal/100g", "protein":"2g", "fat":"15.4g", "carbs":"8.5g" }
+
+  // ─── Tab 1: Nguồn gốc & Chứng nhận ───
+  farmName       String?  @map("farm_name")
+  farmAddress    String?  @map("farm_address")
+  certifications String[] @default([]) // ["VietGAP", "GlobalGAP", "Organic"]
+  farmImageUrl   String?  @map("farm_image_url")
+
+  // ─── Tab 2: Gợi ý món ngon & Bảo quản ───
+  storageGuide String? @map("storage_guide")
+  recipes      Json?   // [{"icon":"🥗","title":"...","content":"..."}]
+
   category   Category       @relation(fields: [categoryId], references: [id])
   images     ProductImage[]
   orderItems OrderItem[]
@@ -97,6 +115,8 @@ model Product {
 
   @@map("products")
 }
+
+
 
 model ProductImage {
   id        String @id @default(uuid())

@@ -1,6 +1,6 @@
 import {
   IsString, IsOptional, IsBoolean, IsInt,
-  IsNumber, Min, Max, IsUUID,
+  IsNumber, Min, Max, IsUUID, IsArray, IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -51,6 +51,54 @@ export class CreateProductDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  // ─── Tab 0: Thông tin sản phẩm & Dinh dưỡng ───
+  @IsOptional()
+  @IsString()
+  origin?: string;
+
+  @IsOptional()
+  @IsString()
+  packagingInfo?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  preservationDays?: number;
+
+  @IsOptional()
+  @IsString()
+  cultivationMethod?: string;
+
+  @IsOptional()
+  nutritionInfo?: Record<string, string>; // { calories, protein, fat, carbs, fiber }
+
+  // ─── Tab 1: Nguồn gốc & Chứng nhận ───
+  @IsOptional()
+  @IsString()
+  farmName?: string;
+
+  @IsOptional()
+  @IsString()
+  farmAddress?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  certifications?: string[];
+
+  @IsOptional()
+  @IsString()
+  farmImageUrl?: string;
+
+  // ─── Tab 2: Gợi ý món ngon & Bảo quản ───
+  @IsOptional()
+  @IsString()
+  storageGuide?: string;
+
+  @IsOptional()
+  recipes?: { icon: string; title: string; content: string }[];
 }
 
 export class UpdateProductDto {
@@ -104,6 +152,54 @@ export class UpdateProductDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  // ─── Tab 0: Thông tin sản phẩm & Dinh dưỡng ───
+  @IsOptional()
+  @IsString()
+  origin?: string;
+
+  @IsOptional()
+  @IsString()
+  packagingInfo?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  preservationDays?: number;
+
+  @IsOptional()
+  @IsString()
+  cultivationMethod?: string;
+
+  @IsOptional()
+  nutritionInfo?: Record<string, string>;
+
+  // ─── Tab 1: Nguồn gốc & Chứng nhận ───
+  @IsOptional()
+  @IsString()
+  farmName?: string;
+
+  @IsOptional()
+  @IsString()
+  farmAddress?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  certifications?: string[];
+
+  @IsOptional()
+  @IsString()
+  farmImageUrl?: string;
+
+  // ─── Tab 2: Gợi ý món ngon & Bảo quản ───
+  @IsOptional()
+  @IsString()
+  storageGuide?: string;
+
+  @IsOptional()
+  recipes?: { icon: string; title: string; content: string }[];
 }
 
 export class ProductQueryDto {
