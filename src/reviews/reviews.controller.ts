@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -10,6 +11,8 @@ export class ReviewsController {
   constructor(private reviewsService: ReviewsService) {}
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300) // 5 phút
   @Get('product/:slug')
   getByProduct(@Param('slug') slug: string) {
     return this.reviewsService.getByProduct(slug);

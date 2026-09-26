@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { CacheModule } from '@nestjs/cache-manager';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -19,6 +20,11 @@ import { RolesGuard } from './common/guards/roles.guard';
 
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 300,    // Default 5 phút (seconds)
+      max: 500,    // Tối đa 500 entries trong memory
+    }),
     PrismaModule,
     AuthModule,
     CategoriesModule,

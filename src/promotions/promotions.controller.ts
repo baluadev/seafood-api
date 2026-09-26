@@ -1,12 +1,8 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Body,
-  Param,
+  Controller, Get, Post, Patch, Delete,
+  Body, Param, UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { Role } from '@prisma/client';
 import { PromotionsService } from './promotions.service';
 import { CreatePromotionDto, UpdatePromotionDto } from './dto/promotion.dto';
@@ -19,6 +15,8 @@ export class PromotionsController {
 
   /** GET /promotions — auth user sees active promotions */
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(900) // 15 phút
   @Get()
   findAll() {
     return this.promotionsService.findAll();

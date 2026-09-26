@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheService } from '../common/cache.service';
 import { CreatePromotionDto, UpdatePromotionDto } from './dto/promotion.dto';
 
 @Injectable()
 export class PromotionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheService: CacheService,
+  ) {}
 
   findAll() {
     return this.prisma.promotion.findMany({
@@ -25,17 +29,23 @@ export class PromotionsService {
     return promo;
   }
 
-  create(dto: CreatePromotionDto) {
-    return this.prisma.promotion.create({ data: dto });
+  async create(dto: CreatePromotionDto) {
+    const promo = await this.prisma.promotion.create({ data: dto });
+    await this.cacheService.clearAll();
+    return promo;
   }
 
   async update(id: string, dto: UpdatePromotionDto) {
     await this.findOne(id);
-    return this.prisma.promotion.update({ where: { id }, data: dto });
+    const promo = await this.prisma.promotion.update({ where: { id }, data: dto });
+    await this.cacheService.clearAll();
+    return promo;
   }
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.promotion.delete({ where: { id } });
+    await this.prisma.promotion.delete({ where: { id } });
+    await this.cacheService.clearAll();
+    return { message: 'Đã xóa promotion' };
   }
 }

@@ -1,7 +1,8 @@
 import {
   Controller, Get, Post, Patch,
-  Body, Param, Query,
+  Body, Param, Query, UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { Role } from '@prisma/client';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
@@ -13,12 +14,16 @@ export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(1800) // 30 phút
   @Get()
   findAll(@Query('all') all?: string) {
     return this.categoriesService.findAll(all !== 'true');
   }
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(1800) // 30 phút
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(id);

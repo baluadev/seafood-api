@@ -1,10 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheService } from '../common/cache.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 
 @Injectable()
 export class ReviewsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheService: CacheService,
+  ) {}
 
   async getByProduct(productSlug: string) {
     const product = await this.prisma.product.findUnique({ where: { slug: productSlug } });
@@ -49,6 +53,7 @@ export class ReviewsService {
 
     // Cập nhật avgRating và reviewCount trong product
     await this._updateProductRating(productId);
+    await this.cacheService.clearAll();
 
     return review;
   }
@@ -61,6 +66,7 @@ export class ReviewsService {
     }
     await this.prisma.review.delete({ where: { id: reviewId } });
     await this._updateProductRating(review.productId);
+    await this.cacheService.clearAll();
     return { message: 'Đã xóa đánh giá' };
   }
 

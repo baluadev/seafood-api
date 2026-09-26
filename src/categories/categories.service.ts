@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheService } from '../common/cache.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheService: CacheService,
+  ) {}
 
   async findAll(activeOnly = true) {
     return this.prisma.category.findMany({
@@ -24,8 +28,9 @@ export class CategoriesService {
       where: { slug: dto.slug },
     });
     if (existing) throw new ConflictException('Slug đã tồn tại');
-
-    return this.prisma.category.create({ data: dto });
+    const cat = await this.prisma.category.create({ data: dto });
+    await this.cacheService.clearAll();
+    return cat;
   }
 
   async update(id: string, dto: UpdateCategoryDto) {
@@ -36,14 +41,18 @@ export class CategoriesService {
       });
       if (conflict) throw new ConflictException('Slug đã tồn tại');
     }
-    return this.prisma.category.update({ where: { id }, data: dto });
+    const cat = await this.prisma.category.update({ where: { id }, data: dto });
+    await this.cacheService.clearAll();
+    return cat;
   }
 
   async toggleActive(id: string) {
     const category = await this.findOne(id);
-    return this.prisma.category.update({
+    const updated = await this.prisma.category.update({
       where: { id },
       data: { isActive: !category.isActive },
     });
+    await this.cacheService.clearAll();
+    return updated;
   }
 }

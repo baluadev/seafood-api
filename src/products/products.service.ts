@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheService } from '../common/cache.service';
 import { CreateProductDto, UpdateProductDto, ProductQueryDto } from './dto/product.dto';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheService: CacheService,
+  ) {}
 
   async findAll(query: ProductQueryDto) {
     const { page = 1, limit = 12, categoryId, search, sort, isHot, minPrice, maxPrice, all } = query;
@@ -89,10 +93,12 @@ export class ProductsService {
       where: { slug: dto.slug },
     });
     if (existing) throw new ConflictException('Slug đã tồn tại');
-    return this.prisma.product.create({
+    const product = await this.prisma.product.create({
       data: { ...dto, price: dto.price, discountRate: dto.discountRate ?? 0 },
       include: { category: true },
     });
+    await this.cacheService.clearAll();
+    return product;
   }
 
   async update(id: string, dto: UpdateProductDto) {
@@ -103,19 +109,23 @@ export class ProductsService {
       });
       if (conflict) throw new ConflictException('Slug đã tồn tại');
     }
-    return this.prisma.product.update({
+    const product = await this.prisma.product.update({
       where: { id },
       data: dto,
       include: { category: true },
     });
+    await this.cacheService.clearAll();
+    return product;
   }
 
   async toggleActive(id: string) {
     const product = await this.findOne(id);
-    return this.prisma.product.update({
+    const updated = await this.prisma.product.update({
       where: { id },
       data: { isActive: !product.isActive },
       select: { id: true, title: true, isActive: true },
     });
+    await this.cacheService.clearAll();
+    return updated;
   }
 }

@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheService } from '../common/cache.service';
 import { CreateSliderDto, UpdateSliderDto } from './dto/slider.dto';
 
 @Injectable()
 export class SlidersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheService: CacheService,
+  ) {}
 
   findAll() {
     return this.prisma.slider.findMany({
@@ -19,17 +23,23 @@ export class SlidersService {
     return slider;
   }
 
-  create(dto: CreateSliderDto) {
-    return this.prisma.slider.create({ data: dto });
+  async create(dto: CreateSliderDto) {
+    const slider = await this.prisma.slider.create({ data: dto });
+    await this.cacheService.clearAll();
+    return slider;
   }
 
   async update(id: string, dto: UpdateSliderDto) {
     await this.findOne(id);
-    return this.prisma.slider.update({ where: { id }, data: dto });
+    const slider = await this.prisma.slider.update({ where: { id }, data: dto });
+    await this.cacheService.clearAll();
+    return slider;
   }
 
   async remove(id: string) {
     await this.findOne(id);
-    return this.prisma.slider.delete({ where: { id } });
+    await this.prisma.slider.delete({ where: { id } });
+    await this.cacheService.clearAll();
+    return { message: 'Đã xóa slider' };
   }
 }

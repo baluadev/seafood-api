@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { Role } from '@prisma/client';
 import { SlidersService } from './sliders.service';
 import { CreateSliderDto, UpdateSliderDto } from './dto/slider.dto';
@@ -10,6 +11,8 @@ export class SlidersController {
   constructor(private slidersService: SlidersService) {}
 
   @Public()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(900) // 15 phút
   @Get()
   findAll() {
     return this.slidersService.findAll();
